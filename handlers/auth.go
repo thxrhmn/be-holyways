@@ -47,7 +47,7 @@ func (h *handlerAuth) Register(c echo.Context) error {
 		Email:    request.Email,
 		Password: password,
 		Phone:    request.Phone,
-		Image:    request.Image,
+		Image:    "https://i.pinimg.com/originals/47/4f/5f/474f5fa00f60fb5c2e47c9dfcd7b1593.jpg",
 		Address:  request.Address,
 	}
 
