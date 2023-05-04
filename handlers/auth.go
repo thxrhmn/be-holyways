@@ -1,15 +1,15 @@
 package handlers
 
 import (
-	"log"
-	"net/http"
-	"time"
 	authdto "holyways/dto/auth"
 	dto "holyways/dto/result"
 	"holyways/models"
 	"holyways/pkg/bcrypt"
 	jwtToken "holyways/pkg/jwt"
 	"holyways/repositories"
+	"log"
+	"net/http"
+	"time"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/golang-jwt/jwt/v4"
@@ -27,30 +27,33 @@ func HandlerAuth(AuthRepository repositories.AuthRepository) *handlerAuth {
 func (h *handlerAuth) Register(c echo.Context) error {
 	request := new(authdto.AuthRequest)
 	if err := c.Bind(request); err != nil {
-		return c.JSON(http.StatusBadRequest, dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()})
+		return c.JSON(http.StatusBadRequest, dto.ErrorResult{Status: http.StatusBadRequest, Message: err.Error()})
 	}
 
 	validation := validator.New()
 	err := validation.Struct(request)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()})
+		return c.JSON(http.StatusBadRequest, dto.ErrorResult{Status: http.StatusBadRequest, Message: err.Error()})
 	}
 
 	// bcrypt pasword
 	password, err := bcrypt.HashingPassword(request.Password)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()})
+		return c.JSON(http.StatusBadRequest, dto.ErrorResult{Status: http.StatusBadRequest, Message: err.Error()})
 	}
 
 	user := models.User{
 		FullName: request.FullName,
 		Email:    request.Email,
 		Password: password,
+		Phone:    request.Phone,
+		Image:    request.Image,
+		Address:  request.Address,
 	}
 
 	data, err := h.AuthRepository.Register(user)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, dto.ErrorResult{Code: http.StatusInternalServerError, Message: err.Error()})
+		return c.JSON(http.StatusInternalServerError, dto.ErrorResult{Status: http.StatusInternalServerError, Message: err.Error()})
 	}
 
 	//generate token
@@ -70,13 +73,13 @@ func (h *handlerAuth) Register(c echo.Context) error {
 		Token:    token,
 	}
 
-	return c.JSON(http.StatusOK, dto.SuccessResult{Code: http.StatusOK, Data: registerResponse})
+	return c.JSON(http.StatusOK, dto.SuccessResult{Status: http.StatusOK, Data: registerResponse})
 }
 
 func (h *handlerAuth) Login(c echo.Context) error {
 	request := new(authdto.LoginRequest)
 	if err := c.Bind(request); err != nil {
-		return c.JSON(http.StatusBadRequest, dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()})
+		return c.JSON(http.StatusBadRequest, dto.ErrorResult{Status: http.StatusBadRequest, Message: err.Error()})
 	}
 
 	// REQUEST BODY KETIKA LOGIN
@@ -88,13 +91,13 @@ func (h *handlerAuth) Login(c echo.Context) error {
 	// Check email
 	user, err := h.AuthRepository.Login(user.Email)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()})
+		return c.JSON(http.StatusBadRequest, dto.ErrorResult{Status: http.StatusBadRequest, Message: err.Error()})
 	}
 
 	// Check password
 	isValid := bcrypt.CheckPasswordHash(request.Password, user.Password)
 	if !isValid {
-		return c.JSON(http.StatusBadRequest, dto.ErrorResult{Code: http.StatusBadRequest, Message: "wrong email or password"})
+		return c.JSON(http.StatusBadRequest, dto.ErrorResult{Status: http.StatusBadRequest, Message: "wrong email or password"})
 	}
 
 	// Generate token
@@ -115,7 +118,7 @@ func (h *handlerAuth) Login(c echo.Context) error {
 		Token:    token,
 	}
 
-	return c.JSON(http.StatusOK, dto.SuccessResult{Code: http.StatusOK, Data: loginResponse})
+	return c.JSON(http.StatusOK, dto.SuccessResult{Status: http.StatusOK, Data: loginResponse})
 }
 
 func (h *handlerAuth) CheckAuth(c echo.Context) error {
@@ -124,5 +127,5 @@ func (h *handlerAuth) CheckAuth(c echo.Context) error {
 
 	user, _ := h.AuthRepository.CheckAuth(int(userId))
 
-	return c.JSON(http.StatusOK, dto.SuccessResult{Code: http.StatusOK, Data: user})
+	return c.JSON(http.StatusOK, dto.SuccessResult{Status: http.StatusOK, Data: user})
 }

@@ -4,8 +4,7 @@ import (
 	"fmt"
 	"holyways/database"
 	"holyways/pkg/mysql"
-	"holyways/pkg/routes"
-	"net/http"
+	"holyways/routes"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -34,11 +33,7 @@ func main() {
 
 	routes.RouteInit(e.Group("/api/v1"))
 
-	e.GET("/", func(c echo.Context) error {
-		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-		c.Response().WriteHeader(http.StatusOK)
-		return c.String(http.StatusOK, "Hello World")
-	})
+	e.Static("/uploads", "./uploads")
 
 	// fmt.Println("Server running on localhost:5000")
 	// e.Logger.Fatal(e.Start("localhost:5000"))
