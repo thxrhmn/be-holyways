@@ -94,11 +94,11 @@ func (h *handlerDonation) CreateDonation(c echo.Context) error {
 	return c.JSON(http.StatusOK, dto.SuccessResult{Status: http.StatusOK, Data: convertResponseDonation(donation)})
 }
 
-func (h *handlerDonation) GetDonationUser(c echo.Context) error {
+func (h *handlerDonation) GetDonationByUserID(c echo.Context) error {
 	userLogin := c.Get("userLogin")
 	userId := userLogin.(jwt.MapClaims)["id"].(float64)
 
-	donation, err := h.DonationRepository.GetDonationUser(int(userId))
+	donation, err := h.DonationRepository.GetDonationByUserID(int(userId))
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, dto.ErrorResult{Status: http.StatusInternalServerError, Message: err.Error()})
 	}

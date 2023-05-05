@@ -10,7 +10,7 @@ type DonationRepository interface {
 	FindDonation() ([]models.Donation, error)
 	GetDonation(ID int) (models.Donation, error)
 	CreateDonation(donation models.Donation) (models.Donation, error)
-	GetDonationUser(userId int) ([]models.Donation, error)
+	GetDonationByUserID(userId int) ([]models.Donation, error)
 	UpdateDonation(donation models.Donation) (models.Donation, error)
 	DeleteDonation(donation models.Donation, ID int) (models.Donation, error)
 }
@@ -39,7 +39,7 @@ func (r *repository) CreateDonation(donation models.Donation) (models.Donation, 
 	return donation, err
 }
 
-func (r *repository) GetDonationUser(userId int) ([]models.Donation, error) {
+func (r *repository) GetDonationByUserID(userId int) ([]models.Donation, error) {
 	var donations []models.Donation
 	err := r.db.Where("user_id=?", userId).Preload("User").Find(&donations).Error
 	return donations, err

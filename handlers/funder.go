@@ -112,3 +112,4 @@ func (h *handlerFunder) CreateFunder(c echo.Context) error {
 	return c.JSON(http.StatusOK, dto.SuccessResult{Status: http.StatusOK, Data: snapResp})
 
 }
+
