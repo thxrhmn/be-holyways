@@ -9,7 +9,7 @@ type Donation struct {
 	Thumbnail   string               `json:"thumbnail"`
 	Goal        int                  `json:"goal"`
 	CurrentGoal int                  `json:"current_goal"`
-	Description string               `json:"description" gorm:"type: varchar(255)"`
+	Description string               `json:"description" gorm:"type: varchar(1023)"`
 	User        UsersProfileResponse `json:"user"`
 	UserID      int                  `json:"user_id"`
 	CreatedAt   time.Time            `json:"-"`

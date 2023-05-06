@@ -9,7 +9,7 @@ type User struct {
 	Password  string                 `json:"password" type:"varchar(255)"`
 	Phone     int                    `json:"phone"`
 	Image     string                 `json:"image" gorm:"type: varchar(255)"`
-	Address   string                 `json:"address" gorm:"type: varchar(255)"`
+	Address   string                 `json:"address" gorm:"type: varchar(1023)"`
 	Donation  []DonationUserResponse `json:"donations"`
 	CreatedAt time.Time              `json:"-"`
 	UpdatedAt time.Time              `json:"-"`
